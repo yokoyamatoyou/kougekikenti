@@ -167,23 +167,22 @@ aggression\_analyzer/
 ### **AIエージェント進捗ログ (AI Agent Progress Log)**
 
 *AIエージェントは、各タスク完了後にこのリストを更新すること。*
-
-* \[ \] **Phase 0**  
-  * \[ \] Task 0.1: ディレクトリとファイルの作成  
-  * \[ \] Task 0.2: 依存関係と環境変数の設定  
-  * \[ \] Task 0.3: 設定ファイルの作成  
-  * \[ \] Task 0.4: ロジックの分離とクラス化  
-  * \[ \] Task 0.5: 攻撃性スコア判定プロンプトの高度化  
-  * \[ \] Verification 0  
-* \[ \] **Phase 1**  
-  * \[ \] Task 1.1: スクレイパーモジュールの作成  
-  * \[ \] Verification 1  
-* \[ \] **Phase 2**  
-  * \[ \] Task 2.1: GUIのレイアウト変更  
-  * \[ \] Task 2.2: 非同期処理の実装  
-  * \[ \] Task 2.3: メインロジックの統合  
-  * \[ \] Verification 2  
-* \[ \] **Phase 3**  
-  * \[ \] Task 3.1: コードのクリーンアップと型ヒントの追加  
-  * \[ \] Task 3.2: README.md の作成  
-  * \[ \] Verification 3
+* [x] **Phase 0**
+  * [x] Task 0.1: ディレクトリとファイルの作成
+  * [x] Task 0.2: 依存関係と環境変数の設定
+  * [x] Task 0.3: 設定ファイルの作成
+  * [x] Task 0.4: ロジックの分離とクラス化
+  * [x] Task 0.5: 攻撃性スコア判定プロンプトの高度化
+  * [ ] Verification 0
+* [ ] **Phase 1**
+  * [ ] Task 1.1: スクレイパーモジュールの作成
+  * [ ] Verification 1
+* [ ] **Phase 2**
+  * [ ] Task 2.1: GUIのレイアウト変更
+  * [ ] Task 2.2: 非同期処理の実装
+  * [ ] Task 2.3: メインロジックの統合
+  * [ ] Verification 2
+* [ ] **Phase 3**
+  * [ ] Task 3.1: コードのクリーンアップと型ヒントの追加
+  * [ ] Task 3.2: README.md の作成
+  * [ ] Verification 3
