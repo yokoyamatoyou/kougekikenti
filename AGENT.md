@@ -176,7 +176,7 @@ aggression\_analyzer/
 * [x] Verification 0
 * [ ] **Phase 1**
 * [x] Task 1.1: スクレイパーモジュールの作成
-* [ ] Verification 1
+* [x] Verification 1
 * [ ] **Phase 2**
 * [x] Task 2.1: GUIのレイアウト変更
 * [x] Task 2.2: 非同期処理の実装
