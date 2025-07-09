@@ -1,8 +1,10 @@
+import threading
 import pandas as pd
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 
 from modules.analyzer import Analyzer
+from modules.scraper import Scraper
 
 
 class ModerationApp(ctk.CTk):
@@ -15,6 +17,7 @@ class ModerationApp(ctk.CTk):
 
         self.df: pd.DataFrame | None = None
         self.analyzer = Analyzer()
+        self.scraper = Scraper()
         self.create_ui()
 
     def create_ui(self) -> None:
@@ -31,6 +34,12 @@ class ModerationApp(ctk.CTk):
         self.settings_frame = ctk.CTkFrame(self.main_frame)
         self.settings_frame.pack(pady=10, padx=20, fill="x")
 
+        self.username_entry = ctk.CTkEntry(self.settings_frame, width=120, placeholder_text="XユーザーID")
+        self.username_entry.pack(side="left", padx=5)
+
+        self.limit_entry = ctk.CTkEntry(self.settings_frame, width=60, placeholder_text="取得件数")
+        self.limit_entry.pack(side="left", padx=5)
+
         self.temp_entry = ctk.CTkEntry(self.settings_frame, width=60)
         self.temp_entry.pack(side="left", padx=5)
         self.temp_entry.insert(0, str(self.analyzer.temperature))
@@ -39,24 +48,18 @@ class ModerationApp(ctk.CTk):
         self.top_p_entry.pack(side="left", padx=5)
         self.top_p_entry.insert(0, str(self.analyzer.top_p))
 
-        self.status_label = ctk.CTkLabel(self.main_frame, text="ファイルを選択してください")
+        self.status_label = ctk.CTkLabel(self.main_frame, text="ユーザーIDを入力してください")
         self.status_label.pack(pady=10)
 
         self.button_frame = ctk.CTkFrame(self.main_frame)
         self.button_frame.pack(pady=20)
 
-        self.upload_button = ctk.CTkButton(
-            self.button_frame, text="ファイルを選択", command=self.load_excel_file
-        )
-        self.upload_button.pack(pady=10)
-
-        self.analyze_button = ctk.CTkButton(
+        self.run_button = ctk.CTkButton(
             self.button_frame,
-            text="分析開始",
-            command=self.analyze_file,
-            state="disabled",
+            text="収集＆分析開始",
+            command=self.run_analysis,
         )
-        self.analyze_button.pack(pady=10)
+        self.run_button.pack(pady=10)
 
         self.save_button = ctk.CTkButton(
             self.button_frame,
@@ -70,28 +73,40 @@ class ModerationApp(ctk.CTk):
         self.progress_bar.pack(pady=20)
         self.progress_bar.set(0)
 
-    def load_excel_file(self) -> None:
-        file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])
-        if not file_path:
-            return
+    def run_analysis(self) -> None:
+        self.run_button.configure(state="disabled")
+        self.save_button.configure(state="disabled")
+        thread = threading.Thread(target=self._run_analysis_thread, daemon=True)
+        thread.start()
+
+    def _run_analysis_thread(self) -> None:
+        username = self.username_entry.get().strip()
+        limit_str = self.limit_entry.get().strip()
         try:
-            self.df = pd.read_excel(file_path, sheet_name=0)
-            self.status_label.configure(text=f"ファイルを読み込みました: {len(self.df)}件のデータ", text_color="green")
-            self.analyze_button.configure(state="normal")
-        except Exception as e:
-            self.status_label.configure(text="ファイルの読み込みに失敗しました", text_color="red")
-            messagebox.showerror("読み込みエラー", f"ファイルを読み込めませんでした: {e}")
-
-    def analyze_file(self) -> None:
-        if self.df is None or '投稿内容' not in self.df.columns:
-            self.status_label.configure(text="「投稿内容」列が見つかりません", text_color="red")
+            limit = int(limit_str) if limit_str else 20
+        except ValueError:
+            self.after(0, lambda: self.status_label.configure(text="取得件数が不正です", text_color="red"))
+            self.after(0, lambda: self.run_button.configure(state="normal"))
             return
 
-        self.analyze_button.configure(state="disabled")
-        self.upload_button.configure(state="disabled")
-        self.status_label.configure(text="分析を実行中...")
+        self.after(0, lambda: self.status_label.configure(text="投稿を取得中..."))
+        df = self.scraper.scrape_user_posts(username, limit)
+        if df.empty:
+            self.after(0, lambda: self.status_label.configure(text="投稿が取得できませんでした", text_color="red"))
+            self.after(0, lambda: self.run_button.configure(state="normal"))
+            return
 
-        category_names = ["hate", "hate/threatening", "self-harm", "sexual", "sexual/minors", "violence", "violence/graphic"]
+        self.df = df
+
+        category_names = [
+            "hate",
+            "hate/threatening",
+            "self-harm",
+            "sexual",
+            "sexual/minors",
+            "violence",
+            "violence/graphic",
+        ]
         category_flags = {name: [] for name in category_names}
         category_scores = {name: [] for name in category_names}
         aggressiveness_scores = []
@@ -100,31 +115,33 @@ class ModerationApp(ctk.CTk):
         total_rows = len(self.df)
 
         for index, row in self.df.iterrows():
-            text = row['投稿内容']
+            text = row["content"]
             categories, scores = self.analyzer.moderate_text(text)
             for name in category_names:
-                category_flags[name].append(getattr(categories, name.replace('/', '_'), False))
-                category_scores[name].append(getattr(scores, name.replace('/', '_'), 0.0))
+                category_flags[name].append(getattr(categories, name.replace("/", "_"), False))
+                category_scores[name].append(getattr(scores, name.replace("/", "_"), 0.0))
             score, reason = self.analyzer.get_aggressiveness_score(text)
             aggressiveness_scores.append(score)
             aggressiveness_reasons.append(reason)
 
             progress = (index + 1) / total_rows
-            self.progress_bar.set(progress)
-            self.status_label.configure(text=f"分析中... {index + 1}/{total_rows}")
-            self.update()
+            self.after(0, lambda p=progress, i=index + 1: (
+                self.progress_bar.set(p),
+                self.status_label.configure(text=f"分析中... {i}/{total_rows}"),
+            ))
 
         for name in category_names:
-            self.df[f'{name}_flag'] = category_flags[name]
-            self.df[f'{name}_score'] = category_scores[name]
-        self.df['aggressiveness_score'] = aggressiveness_scores
-        self.df['aggressiveness_reason'] = aggressiveness_reasons
-        self.df['total_aggression'] = self.df.apply(self.analyzer.total_aggression, axis=1)
+            self.df[f"{name}_flag"] = category_flags[name]
+            self.df[f"{name}_score"] = category_scores[name]
+        self.df["aggressiveness_score"] = aggressiveness_scores
+        self.df["aggressiveness_reason"] = aggressiveness_reasons
+        self.df["total_aggression"] = self.df.apply(self.analyzer.total_aggression, axis=1)
 
-        self.status_label.configure(text="分析が完了しました", text_color="green")
-        self.save_button.configure(state="normal")
-        self.upload_button.configure(state="normal")
-        self.analyze_button.configure(state="normal")
+        self.after(0, lambda: (
+            self.status_label.configure(text="分析が完了しました", text_color="green"),
+            self.save_button.configure(state="normal"),
+            self.run_button.configure(state="normal"),
+        ))
 
     def save_results(self) -> None:
         save_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
