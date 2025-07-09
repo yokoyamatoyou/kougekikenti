@@ -12,6 +12,7 @@ from config.settings import (
     DEFAULT_TEMPERATURE,
     DEFAULT_TOP_P,
     AGGRESSION_PROMPT_TEMPLATE,
+    WEIGHTS,
 )
 
 
@@ -54,16 +55,28 @@ class Analyzer:
         return None, None
 
     def total_aggression(self, row: pd.Series) -> float:
-        # 簡易的な総合スコア計算
+        """Calculate a composite aggression score for a dataframe row.
+
+        Each category score and flag is multiplied by a weight defined in
+        :data:`config.settings.WEIGHTS`.  When a weight is not present, the
+        original constant used by this project is applied as a default.
+        """
+
         return (
-            0.5 * row.get("hate_score", 0)
-            + 0.3 * row.get("hate/threatening_score", 0)
-            + 0.3 * row.get("violence_score", 0)
-            + 0.1 * row.get("sexual_score", 0)
-            + 0.1 * row.get("sexual/minors_score", 0)
-            + 0.5 * (row.get("aggressiveness_score") or 0)
-            + (2.0 if row.get("hate_flag") else 0)
-            + (1.0 if row.get("hate/threatening_flag") else 0)
-            + (1.5 if row.get("violence_flag") else 0)
-            + (1.0 if row.get("sexual_flag") else 0)
+            WEIGHTS.get("hate_score", 0.5) * row.get("hate_score", 0)
+            + WEIGHTS.get("hate/threatening_score", 0.3)
+            * row.get("hate/threatening_score", 0)
+            + WEIGHTS.get("violence_score", 0.3) * row.get("violence_score", 0)
+            + WEIGHTS.get("sexual_score", 0.1) * row.get("sexual_score", 0)
+            + WEIGHTS.get("sexual/minors_score", 0.1)
+            * row.get("sexual/minors_score", 0)
+            + WEIGHTS.get("aggressiveness_score", 0.5)
+            * (row.get("aggressiveness_score") or 0)
+            + WEIGHTS.get("hate_flag", 2.0) * (1 if row.get("hate_flag") else 0)
+            + WEIGHTS.get("hate/threatening_flag", 1.0)
+            * (1 if row.get("hate/threatening_flag") else 0)
+            + WEIGHTS.get("violence_flag", 1.5)
+            * (1 if row.get("violence_flag") else 0)
+            + WEIGHTS.get("sexual_flag", 1.0)
+            * (1 if row.get("sexual_flag") else 0)
         )
