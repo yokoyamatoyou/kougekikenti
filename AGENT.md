@@ -183,5 +183,6 @@ aggression\_analyzer/
 * [x] Task 2.3: メインロジックの統合
 * [ ] Verification 2
 * [ ] **Phase 3**
-  * [ ] Task 3.1: コードのクリーンアップと型ヒントの追加    * [x] Task 3.2: README.md の作成
+  * [x] Task 3.1: コードのクリーンアップと型ヒントの追加
+  * [x] Task 3.2: README.md の作成
   * [ ] Verification 3
