@@ -1,7 +1,7 @@
 import os
 import json
 import time
-from typing import Tuple, List
+from typing import Tuple, List, Any
 
 import pandas as pd
 from openai import OpenAI
@@ -24,7 +24,7 @@ class Analyzer:
         self.temperature = DEFAULT_TEMPERATURE
         self.top_p = DEFAULT_TOP_P
 
-    def moderate_text(self, text: str):
+    def moderate_text(self, text: str) -> tuple[Any, Any]:
         response = self.client.moderations.create(
             input=text,
             model=MODERATION_MODEL,
