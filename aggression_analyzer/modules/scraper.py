@@ -1,4 +1,5 @@
 from typing import Optional
+import time
 import pandas as pd
 
 try:
@@ -47,6 +48,7 @@ class Scraper:
                         "content": tweet.content,
                     }
                 )
+                time.sleep(1)
         except Exception as e:
             print(f"scrape error: {e}")
             return pd.DataFrame()

@@ -13,6 +13,7 @@ sys.modules['snscrape.modules'] = fake_modules
 sys.modules['snscrape.modules.twitter'] = fake_twitter
 
 from aggression_analyzer.modules.scraper import Scraper
+import time
 
 
 class FakeTweet(SimpleNamespace):
@@ -39,6 +40,10 @@ def test_scrape_user_posts(monkeypatch):
     monkeypatch.setattr(
         'aggression_analyzer.modules.scraper.sntwitter.TwitterUserScraper',
         FakeUserScraper,
+    )
+    monkeypatch.setattr(
+        'aggression_analyzer.modules.scraper.time.sleep',
+        lambda _: None,
     )
     scraper = Scraper()
     df = scraper.scrape_user_posts('user', limit=2)
