@@ -16,8 +16,19 @@ DEFAULT_TOP_P = 1.0
 
 # Aggression Score Weights
 WEIGHTS = {
+    # score-based weights
     "hate_score": 0.5,
-    # ... other weights can be filled later
+    "hate/threatening_score": 0.3,
+    "violence_score": 0.3,
+    "sexual_score": 0.1,
+    "sexual/minors_score": 0.1,
+    "aggressiveness_score": 0.5,
+
+    # flag-based weights
+    "hate_flag": 2.0,
+    "hate/threatening_flag": 1.0,
+    "violence_flag": 1.5,
+    "sexual_flag": 1.0,
 }
 
 AGGRESSION_PROMPT_TEMPLATE = """

@@ -52,6 +52,11 @@ Scraping is performed serially to avoid rate limiting. The delay between
 requests can be adjusted with `SCRAPE_DELAY_SECONDS` in
 `config/settings.py`.
 
+Aggression score weights used to compute the final `total_aggression`
+value can also be tuned.  Edit the `WEIGHTS` dictionary in
+`config/settings.py` to change how each moderation category contributes
+to the overall score.
+
 ## Running Tests
 
 Basic functionality is covered by unit tests in the `tests/` directory. After installing the requirements, run:
