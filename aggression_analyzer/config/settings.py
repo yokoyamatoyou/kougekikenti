@@ -6,6 +6,10 @@ AGGRESSION_ANALYSIS_MODEL = "gpt-4o-mini"
 # 同時に実行する分析タスク数の上限
 MAX_CONCURRENT_WORKERS = 8
 
+# Scraper Settings
+# 1リクエストごとの待機秒数
+SCRAPE_DELAY_SECONDS = 1
+
 # Analysis Parameters
 DEFAULT_TEMPERATURE = 0.5
 DEFAULT_TOP_P = 1.0

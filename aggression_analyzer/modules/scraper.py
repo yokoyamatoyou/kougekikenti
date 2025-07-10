@@ -1,5 +1,6 @@
 from typing import Optional
 import time
+from config.settings import SCRAPE_DELAY_SECONDS
 import pandas as pd
 
 try:
@@ -48,7 +49,7 @@ class Scraper:
                         "content": tweet.content,
                     }
                 )
-                time.sleep(1)
+                time.sleep(SCRAPE_DELAY_SECONDS)
         except Exception as e:
             print(f"scrape error: {e}")
             return pd.DataFrame()

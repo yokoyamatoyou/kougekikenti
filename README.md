@@ -48,6 +48,10 @@ You can adjust this value to match your hardware resources and the
 rate limits of the OpenAI API. Increasing it speeds up large batch
 analysis at the cost of more simultaneous API calls.
 
+Scraping is performed serially to avoid rate limiting. The delay between
+requests can be adjusted with `SCRAPE_DELAY_SECONDS` in
+`config/settings.py`.
+
 ## Running Tests
 
 Basic functionality is covered by unit tests in the `tests/` directory. After installing the requirements, run:
