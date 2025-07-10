@@ -34,6 +34,20 @@ xvfb-run -a python aggression_analyzer/main.py
 
 Enter a Twitter user ID and the number of posts to fetch. The application will scrape the posts, analyze them, and allow you to save the results to an Excel file in the `output/` directory.
 
+## Parallel Processing
+
+Analysis requests are processed concurrently using `ThreadPoolExecutor`.
+The maximum number of workers defaults to the constant
+`MAX_CONCURRENT_WORKERS` defined in `config/settings.py`:
+
+```python
+MAX_CONCURRENT_WORKERS = 8
+```
+
+You can adjust this value to match your hardware resources and the
+rate limits of the OpenAI API. Increasing it speeds up large batch
+analysis at the cost of more simultaneous API calls.
+
 ## Running Tests
 
 Basic functionality is covered by unit tests in the `tests/` directory. After installing the requirements, run:

@@ -8,6 +8,8 @@ from modules.scraper import Scraper
 
 
 class ModerationApp(ctk.CTk):
+    """Desktop GUI for scraping and analyzing posts."""
+
     def __init__(self) -> None:
         super().__init__()
         ctk.set_appearance_mode("dark")
@@ -80,6 +82,7 @@ class ModerationApp(ctk.CTk):
         thread.start()
 
     def _run_analysis_thread(self) -> None:
+        """Collect posts and run the analysis in a background thread."""
         username = self.username_entry.get().strip()
         limit_str = self.limit_entry.get().strip()
         try:
