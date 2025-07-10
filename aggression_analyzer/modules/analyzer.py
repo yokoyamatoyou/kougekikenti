@@ -1,7 +1,7 @@
 import os
 import json
 import time
-from typing import Tuple, List, Any
+from typing import Tuple, List, Any, Callable, Optional
 
 import pandas as pd
 from openai import OpenAI
@@ -13,6 +13,7 @@ from config.settings import (
     DEFAULT_TOP_P,
     AGGRESSION_PROMPT_TEMPLATE,
     WEIGHTS,
+    MAX_CONCURRENT_WORKERS,
 )
 
 
@@ -80,3 +81,63 @@ class Analyzer:
             + WEIGHTS.get("sexual_flag", 1.0)
             * (1 if row.get("sexual_flag") else 0)
         )
+
+    def analyze_dataframe_in_parallel(
+        self,
+        df: pd.DataFrame,
+        progress_callback: Optional[Callable[[int, int], None]] = None,
+    ) -> pd.DataFrame:
+        """Analyze a DataFrame using parallel threads.
+
+        Each row is processed with :meth:`moderate_text` and
+        :meth:`get_aggressiveness_score`.  Results are merged back into the
+        original DataFrame. ``progress_callback`` is called after each row is
+        processed with the current completed count and total count.
+        """
+
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        category_names = [
+            "hate",
+            "hate/threatening",
+            "self-harm",
+            "sexual",
+            "sexual/minors",
+            "violence",
+            "violence/graphic",
+        ]
+
+        def process_row(index: int, text: str) -> tuple[int, dict[str, Any]]:
+            categories, scores = self.moderate_text(text)
+            score, reason = self.get_aggressiveness_score(text)
+            result: dict[str, Any] = {
+                "aggressiveness_score": score,
+                "aggressiveness_reason": reason,
+            }
+            for name in category_names:
+                flag = getattr(categories, name.replace("/", "_"), False)
+                sc = getattr(scores, name.replace("/", "_"), 0.0)
+                result[f"{name}_flag"] = flag
+                result[f"{name}_score"] = sc
+            return index, result
+
+        results: dict[int, dict[str, Any]] = {}
+        total = len(df)
+        completed = 0
+        with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_WORKERS) as executor:
+            futures = {
+                executor.submit(process_row, i, row["content"]): i
+                for i, row in df.iterrows()
+            }
+            for future in as_completed(futures):
+                index, data = future.result()
+                results[index] = data
+                completed += 1
+                if progress_callback:
+                    progress_callback(completed, total)
+
+        for index, data in results.items():
+            for key, value in data.items():
+                df.loc[index, key] = value
+        df["total_aggression"] = df.apply(self.total_aggression, axis=1)
+        return df

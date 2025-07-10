@@ -98,44 +98,16 @@ class ModerationApp(ctk.CTk):
 
         self.df = df
 
-        category_names = [
-            "hate",
-            "hate/threatening",
-            "self-harm",
-            "sexual",
-            "sexual/minors",
-            "violence",
-            "violence/graphic",
-        ]
-        category_flags = {name: [] for name in category_names}
-        category_scores = {name: [] for name in category_names}
-        aggressiveness_scores = []
-        aggressiveness_reasons = []
-
         total_rows = len(self.df)
 
-        for index, row in self.df.iterrows():
-            text = row["content"]
-            categories, scores = self.analyzer.moderate_text(text)
-            for name in category_names:
-                category_flags[name].append(getattr(categories, name.replace("/", "_"), False))
-                category_scores[name].append(getattr(scores, name.replace("/", "_"), 0.0))
-            score, reason = self.analyzer.get_aggressiveness_score(text)
-            aggressiveness_scores.append(score)
-            aggressiveness_reasons.append(reason)
-
-            progress = (index + 1) / total_rows
-            self.after(0, lambda p=progress, i=index + 1: (
+        def progress(done: int, total: int = total_rows) -> None:
+            p = done / total
+            self.after(0, lambda: (
                 self.progress_bar.set(p),
-                self.status_label.configure(text=f"分析中... {i}/{total_rows}"),
+                self.status_label.configure(text=f"分析中... {done}/{total}"),
             ))
 
-        for name in category_names:
-            self.df[f"{name}_flag"] = category_flags[name]
-            self.df[f"{name}_score"] = category_scores[name]
-        self.df["aggressiveness_score"] = aggressiveness_scores
-        self.df["aggressiveness_reason"] = aggressiveness_reasons
-        self.df["total_aggression"] = self.df.apply(self.analyzer.total_aggression, axis=1)
+        self.df = self.analyzer.analyze_dataframe_in_parallel(self.df, progress)
 
         self.after(0, lambda: (
             self.status_label.configure(text="分析が完了しました", text_color="green"),

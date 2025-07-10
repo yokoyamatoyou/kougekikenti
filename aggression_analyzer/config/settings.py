@@ -2,6 +2,10 @@
 MODERATION_MODEL = "text-moderation-latest"
 AGGRESSION_ANALYSIS_MODEL = "gpt-4o-mini"
 
+# Concurrency Settings
+# 同時に実行する分析タスク数の上限
+MAX_CONCURRENT_WORKERS = 8
+
 # Analysis Parameters
 DEFAULT_TEMPERATURE = 0.5
 DEFAULT_TOP_P = 1.0

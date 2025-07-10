@@ -116,17 +116,17 @@ aggression\_analyzer/
 
 *AIエージェントは、各タスク完了後にこのリストを更新すること。*
 
-* \[ \] **Phase 0**  
-  * \[ \] Task 0.1, 0.2, 0.3, 0.4  
-  * \[ \] Verification 0  
-* \[ \] **Phase 1**  
-  * \[ \] Task 1.1  
-  * \[ \] Verification 1  
-* \[ \] **Phase 2**  
-  * \[ \] Task 2.1  
-  * \[ \] Task 2.2  
-  * \[ \] Verification 2  
-* \[ \] **Phase 3**  
-  * \[ \] Task 3.1  
-  * \[ \] Task 3.2  
-  * \[ \] Verification 3
+* [x] **Phase 0**
+  * [x] Task 0.1, 0.2, 0.3, 0.4
+  * [x] Verification 0
+* [x] **Phase 1**
+  * [x] Task 1.1
+  * [x] Verification 1
+* [x] **Phase 2**
+  * [x] Task 2.1
+  * [x] Task 2.2
+  * [x] Verification 2
+* [ ] **Phase 3**
+  * [ ] Task 3.1
+  * [ ] Task 3.2
+  * [ ] Verification 3
