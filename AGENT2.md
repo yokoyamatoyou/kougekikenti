@@ -126,7 +126,7 @@ aggression\_analyzer/
   * [x] Task 2.1
   * [x] Task 2.2
   * [x] Verification 2
-* [ ] **Phase 3**
-  * [ ] Task 3.1
-  * [ ] Task 3.2
-  * [ ] Verification 3
+* [x] **Phase 3**
+  * [x] Task 3.1
+  * [x] Task 3.2
+  * [x] Verification 3
