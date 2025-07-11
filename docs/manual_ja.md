@@ -4,9 +4,19 @@
 このツールはX(旧Twitter)の投稿を収集し、AIで攻撃性を分析するものです。
 
 ## 準備するもの
-- OpenAI APIキーを取得し、`.env`に`OPENAI_API_KEY`を設定します。
+1. [OpenAI公式サイト](https://platform.openai.com/account/api-keys)にアクセスし、アカウントを作成またはログインします。
+2. 「Create new secret key」を押してAPIキーを生成し、コピーします。
+3. プロジェクトのルートに`.env`ファイルを作成し、下記のように設定します。
+
+   ```env
+   OPENAI_API_KEY=sk-...
+   ```
+
+   `.env.example`をコピーして編集しても構いません。
 
 ## インストールと起動
+まずはPython 3.10以上をインストールしておくことを推奨します。
+
 ```bash
 pip install -r requirements.txt
 python aggression_analyzer/main.py
@@ -23,3 +33,4 @@ python aggression_analyzer/main.py
 ## 注意事項・免責事項
 - 本ツールの利用は自己責任で行ってください。
 - Xや各サービスの利用規約を遵守してください。
+- 過度な連続利用は避け、APIやXの制限を超えないようご注意ください。
