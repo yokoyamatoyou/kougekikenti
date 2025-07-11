@@ -12,6 +12,11 @@ class FakeNitter:
         pass
 
     def get_tweets(self, term, mode="user", number=20):
+        if mode == "user" and term == "nouser":
+            raise ValueError("user not found")
+        if mode == "term" and term == "rarekeyword":
+            return {"tweets": []}
+
         tweets = [
             {
                 "date": "2024-01-01",
@@ -72,3 +77,26 @@ def test_search_posts_by_keyword(monkeypatch):
     df = scraper.search_posts_by_keyword('hello', limit=1)
     assert len(df) == 1
     assert df.iloc[0]['url'] == 'https://x.com/1'
+
+
+def test_nonexistent_user_returns_empty_dataframe(monkeypatch):
+    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', lambda _: None)
+    scraper = Scraper()
+    df = scraper.scrape_user_posts('nouser', limit=1)
+    assert df.empty
+    assert list(df.columns) == ['timestamp', 'url', 'content', 'user_name']
+
+
+def test_rare_keyword_returns_zero_results(monkeypatch):
+    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', lambda _: None)
+    scraper = Scraper()
+    df = scraper.search_posts_by_keyword('rarekeyword', limit=5)
+    assert df.empty
+    assert list(df.columns) == ['timestamp', 'url', 'content', 'user_name']
+
+
+def test_search_dataframe_columns(monkeypatch):
+    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', lambda _: None)
+    scraper = Scraper()
+    df = scraper.search_posts_by_keyword('hello', limit=1)
+    assert set(['timestamp', 'url', 'content', 'user_name']).issubset(df.columns)
