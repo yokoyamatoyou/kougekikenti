@@ -23,6 +23,14 @@ class FakeTweet(SimpleNamespace):
 class FakeUserScraper:
     def __init__(self, username):
         self.username = username
+        self.entity = SimpleNamespace(
+            id=123,
+            username=username,
+            displayname="User",
+            description="desc",
+            followersCount=10,
+            friendsCount=5,
+        )
 
     def get_items(self):
         tweets = [
@@ -51,3 +59,13 @@ def test_scrape_user_posts(monkeypatch):
     assert list(df.columns) == ['date', 'url', 'content']
     assert df.iloc[0]['content'] == 'a'
     assert df.iloc[1]['url'] == 'https://x.com/2'
+
+
+def test_get_user_profile(monkeypatch):
+    monkeypatch.setattr(
+        'aggression_analyzer.modules.scraper.sntwitter.TwitterUserScraper',
+        FakeUserScraper,
+    )
+    scraper = Scraper()
+    profile = scraper.get_user_profile('user')
+    assert profile and profile['username'] == 'user'

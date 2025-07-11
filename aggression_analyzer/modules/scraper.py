@@ -2,6 +2,7 @@ from typing import Optional
 import time
 from config.settings import SCRAPE_DELAY_SECONDS
 import pandas as pd
+import requests
 
 try:
     import snscrape.modules.twitter as sntwitter
@@ -54,6 +55,47 @@ class Scraper:
             print(f"scrape error: {e}")
             return pd.DataFrame()
         return pd.DataFrame(tweets)
+
+    def get_user_profile(self, username: str) -> Optional[dict[str, object]]:
+        """Fetch basic profile information for ``username``.
+
+        Returns ``None`` when scraping is unavailable or fails."""
+
+        if not SCRAPE_AVAILABLE:
+            print(f"snscrape not available: {SCRAPE_IMPORT_ERROR}")
+            return None
+
+        try:
+            scraper = sntwitter.TwitterUserScraper(username)
+            user = scraper.entity
+            return {
+                "id": getattr(user, "id", None),
+                "username": getattr(user, "username", ""),
+                "displayname": getattr(user, "displayname", ""),
+                "description": getattr(user, "description", ""),
+                "followers": getattr(user, "followersCount", None),
+                "following": getattr(user, "friendsCount", None),
+            }
+        except Exception as e:
+            print(f"profile error: {e}")
+            return None
+
+
+def archive_url(url: str) -> str:
+    """Create a web archive of ``url`` using the Wayback Machine."""
+
+    try:
+        response = requests.get(
+            "https://web.archive.org/save/" + url,
+            timeout=10,
+        )
+        if response.status_code in (200, 302):
+            archive = response.headers.get("Content-Location")
+            if archive:
+                return "https://web.archive.org" + archive
+    except Exception as e:
+        print(f"archive error: {e}")
+    return ""
 
 
 if __name__ == "__main__":
