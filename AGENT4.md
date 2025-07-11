@@ -127,10 +127,11 @@ aggression\_analyzer/
 
 *AIエージェントは、各タスク完了後にこのリストを更新すること。*
 
-* \[ \] **Phase 0**  
-* \[ \] **Phase 1**  
-* \[ \] **Phase 2**  
-* \[ \] **Phase 3**  
-* \[ \] **Phase 4**  
-* \[ \] **Phase 5**  
-* \[ \] **Phase 6**
+* [x] **Phase 0**  
+* [x] **Phase 1**  
+* [x] **Phase 2**  
+* [x] **Phase 3**  
+* [x] **Phase 4**  
+* [x] **Phase 5**  
+* [x] **Phase 6**
+* [x] 2025-07-11 現行の実装がAGENT4.mdと一致することを確認
