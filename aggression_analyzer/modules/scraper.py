@@ -5,16 +5,20 @@ import pandas as pd
 import requests
 
 try:
-    import snscrape.modules.twitter as sntwitter
+    from ntscraper import Nitter
     SCRAPE_AVAILABLE = True
     SCRAPE_IMPORT_ERROR: Exception | None = None
 except Exception as e:  # pragma: no cover - environment dependent
     SCRAPE_AVAILABLE = False
     SCRAPE_IMPORT_ERROR = e
-    sntwitter = None  # type: ignore
+    Nitter = None  # type: ignore
 
 
 class Scraper:
+    def __init__(self, instance: str | None = "https://nitter.net") -> None:
+        self.instance = instance
+        self._nitter = Nitter(instances=[instance], skip_instance_check=True) if SCRAPE_AVAILABLE else None
+
     def scrape_user_posts(self, username: str, limit: int = 20) -> pd.DataFrame:
         """Scrape recent posts from an X (Twitter) user.
 
@@ -28,33 +32,56 @@ class Scraper:
         Returns
         -------
         pandas.DataFrame
-            Data frame containing ``date``, ``url``, and ``content`` columns.
+            Data frame containing ``timestamp``, ``url``, ``content`` and ``user_name`` columns.
             If scraping is unavailable or fails, an empty DataFrame is returned.
         """
 
         if not SCRAPE_AVAILABLE:
-            print(f"snscrape not available: {SCRAPE_IMPORT_ERROR}")
-            return pd.DataFrame()
+            print(f"ntscraper not available: {SCRAPE_IMPORT_ERROR}")
+            return pd.DataFrame(columns=["timestamp", "url", "content", "user_name"])
 
         tweets = []
         try:
-            for i, tweet in enumerate(
-                sntwitter.TwitterUserScraper(username).get_items()
-            ):
-                if i >= limit:
-                    break
+            data = self._nitter.get_tweets(username, mode="user", number=limit)
+            for item in data.get("tweets", []):
                 tweets.append(
                     {
-                        "date": tweet.date,
-                        "url": tweet.url,
-                        "content": tweet.content,
+                        "timestamp": item.get("date"),
+                        "url": item.get("link"),
+                        "content": item.get("text"),
+                        "user_name": item.get("user", {}).get("username"),
                     }
                 )
                 time.sleep(SCRAPE_DELAY_SECONDS)
         except Exception as e:
             print(f"scrape error: {e}")
-            return pd.DataFrame()
-        return pd.DataFrame(tweets)
+            return pd.DataFrame(columns=["timestamp", "url", "content", "user_name"])
+        return pd.DataFrame(tweets, columns=["timestamp", "url", "content", "user_name"])
+
+    def search_posts_by_keyword(self, keyword: str, limit: int = 20) -> pd.DataFrame:
+        """Search posts by keyword using Nitter."""
+
+        if not SCRAPE_AVAILABLE:
+            print(f"ntscraper not available: {SCRAPE_IMPORT_ERROR}")
+            return pd.DataFrame(columns=["timestamp", "url", "content", "user_name"])
+
+        tweets = []
+        try:
+            data = self._nitter.get_tweets(keyword, mode="term", number=limit)
+            for item in data.get("tweets", []):
+                tweets.append(
+                    {
+                        "timestamp": item.get("date"),
+                        "url": item.get("link"),
+                        "content": item.get("text"),
+                        "user_name": item.get("user", {}).get("username"),
+                    }
+                )
+                time.sleep(SCRAPE_DELAY_SECONDS)
+        except Exception as e:
+            print(f"search error: {e}")
+            return pd.DataFrame(columns=["timestamp", "url", "content", "user_name"])
+        return pd.DataFrame(tweets, columns=["timestamp", "url", "content", "user_name"])
 
     def get_user_profile(self, username: str) -> Optional[dict[str, object]]:
         """Fetch basic profile information for ``username``.
@@ -62,19 +89,20 @@ class Scraper:
         Returns ``None`` when scraping is unavailable or fails."""
 
         if not SCRAPE_AVAILABLE:
-            print(f"snscrape not available: {SCRAPE_IMPORT_ERROR}")
+            print(f"ntscraper not available: {SCRAPE_IMPORT_ERROR}")
             return None
 
         try:
-            scraper = sntwitter.TwitterUserScraper(username)
-            user = scraper.entity
+            info = self._nitter.get_profile_info(username)
+            if not info:
+                return None
             return {
-                "id": getattr(user, "id", None),
-                "username": getattr(user, "username", ""),
-                "displayname": getattr(user, "displayname", ""),
-                "description": getattr(user, "description", ""),
-                "followers": getattr(user, "followersCount", None),
-                "following": getattr(user, "friendsCount", None),
+                "id": info.get("id"),
+                "username": info.get("username"),
+                "displayname": info.get("name"),
+                "description": info.get("bio"),
+                "followers": info.get("stats", {}).get("followers"),
+                "following": info.get("stats", {}).get("following"),
             }
         except Exception as e:
             print(f"profile error: {e}")
