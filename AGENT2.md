@@ -43,7 +43,7 @@ aggression\_analyzer/
 * **タスク 0.1: ディレクトリとファイルの作成**  
   * 上記のディレクトリ構造案に基づき、必要なディレクトリと空のPythonファイルを作成する。  
 * **タスク 0.2: 依存関係と環境変数の設定**  
-  * requirements.txt を作成し、内容を記述する: openai, pandas, customtkinter, openpyxl, snscrape, python-dotenv。  
+  * requirements.txt を作成し、内容を記述する: openai, pandas, customtkinter, openpyxl, ntscraper, python-dotenv。
   * .env.example を作成し、OPENAI\_API\_KEY="YOUR\_API\_KEY\_HERE" と記述する。  
 * **タスク 0.3: 設定ファイルの作成 (config/settings.py)**  
   * アプリケーション全体の設定をこのファイルで一元管理する。  

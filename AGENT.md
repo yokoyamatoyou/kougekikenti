@@ -47,7 +47,7 @@ aggression\_analyzer/
 * **タスク 0.1: ディレクトリとファイルの作成**  
   * 上記のディレクトリ構造案に基づき、必要なディレクトリと空のPythonファイル（\_\_init\_\_.pyを含む）を作成する。  
 * **タスク 0.2: 依存関係と環境変数の設定**  
-  * requirements.txt を作成し、内容を記述する: openai, pandas, customtkinter, openpyxl, snscrape, python-dotenv。  
+  * requirements.txt を作成し、内容を記述する: openai, pandas, customtkinter, openpyxl, ntscraper, python-dotenv。
   * .env.example を作成し、OPENAI\_API\_KEY="YOUR\_API\_KEY\_HERE" と記述する。  
   * main.py の先頭で dotenv を使って環境変数を読み込むようにする。  
 * **タスク 0.3: 設定ファイルの作成 (config/settings.py)**  
@@ -125,7 +125,7 @@ aggression\_analyzer/
 * **タスク 1.1: スクレイパーモジュールの作成 (modules/scraper.py)**  
   * Scraper クラスを定義する。  
   * scrape\_user\_posts(self, username: str, limit: int) メソッドを実装する。  
-  * snscrape を使用し、投稿の日時・URL・本文を収集し、pandasのDataFrameとして返す。  
+  * ntscraper を使用し、投稿の日時・URL・本文を収集し、pandasのDataFrameとして返す。
   * **エラーハンドリング:** try-exceptブロックを用いて、ユーザーが存在しない場合や投稿が取得できない場合に、空のDataFrameを返すか、カスタム例外を送出するように実装する。  
 * **【検証ステップ 1】**  
   * scraper.py を直接実行した際にテスト用のユーザーIDで動作確認ができるよう、if \_\_name\_\_ \== "\_\_main\_\_": ブロックにテストコードを記述する。
