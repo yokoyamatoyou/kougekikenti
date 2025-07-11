@@ -17,10 +17,12 @@ except Exception as e:  # pragma: no cover - environment dependent
 class Scraper:
     def __init__(self, instance: str | None = "https://nitter.net") -> None:
         self.instance = instance
-        self._nitter = (
-            Nitter(instances=[instance], skip_instance_check=True) if SCRAPE_AVAILABLE else None
-        )
+        self._nitter = self._create_nitter(instance) if SCRAPE_AVAILABLE else None
         self._columns = ["timestamp", "url", "content", "user_name"]
+
+    def _create_nitter(self, instance: str):
+        """Return a configured :class:`Nitter` client."""
+        return Nitter(instances=[instance], skip_instance_check=True)
 
     def _fetch_tweets(self, term: str, mode: str, limit: int) -> pd.DataFrame:
         if not SCRAPE_AVAILABLE:
