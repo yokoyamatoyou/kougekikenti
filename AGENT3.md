@@ -65,3 +65,13 @@
   * [x] Verification 4
 * [x] **Phase 5**
 * [x] 2025-07-11 現行の実装がAGENT3.mdと一致することを確認
+
+### **補足: PR作成エラーへの対処**
+
+プルリクエスト作成時に"Failed to create PR"と表示されることがある。`__pycache__`
+や `.pytest_cache` などのキャッシュが原因となるため、以下を実施する。
+
+1. `git status --short` で不要ファイルを確認。
+2. `.gitignore` へキャッシュディレクトリを追加し、既存のキャッシュは `git clean -fd`
+   で削除する。
+3. 改めてコミットしてPRを作成する。

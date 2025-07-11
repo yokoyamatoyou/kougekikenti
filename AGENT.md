@@ -187,3 +187,14 @@ aggression\_analyzer/
   * [x] Task 3.2: README.md の作成
   * [x] Verification 3
 * [x] 2025-07-11 現行の実装がAGENT.mdと一致することを確認
+
+### **補足: PR作成エラーへの対処**
+
+稀にCodexが"Failed to create PR"と出力し、プルリクエストの作成に失敗する場合がある。
+多くは `__pycache__` や `.pytest_cache` などのキャッシュファイルがGit管理下に入って
+しまうことが原因である。次の手順で対処すること。
+
+1. `git status --short` で不要なファイルが無いか確認する。
+2. `.gitignore` に `__pycache__/` と `.pytest_cache/` を含め、既に存在するキャッシュ
+   ディレクトリは `git clean -fd` で削除する。
+3. 変更をコミットし直してからPRを作成する。

@@ -131,3 +131,12 @@ aggression\_analyzer/
   * [x] Task 3.2
   * [x] Verification 3
 * [x] 2024-05-21 現行の実装がAGENT.mdと一致することを確認
+
+### **補足: PR作成エラーへの対処**
+
+Codexでプルリクエスト作成時に"Failed to create PR"と表示されることがある。原因の多くは
+`__pycache__` や `.pytest_cache` といったキャッシュがGitに混入したことによる。
+
+1. `git status --short` を実行し、不要なファイルを確認する。
+2. `.gitignore` にキャッシュディレクトリを追加し、`git clean -fd` で削除する。
+3. その後にコミットをやり直し、改めてPRを作成する。
