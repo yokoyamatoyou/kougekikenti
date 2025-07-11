@@ -186,3 +186,4 @@ aggression\_analyzer/
   * [x] Task 3.1: コードのクリーンアップと型ヒントの追加
   * [x] Task 3.2: README.md の作成
   * [x] Verification 3
+* [x] 2025-07-11 現行の実装がAGENT.mdと一致することを確認
