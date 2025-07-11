@@ -57,6 +57,15 @@ value can also be tuned.  Edit the `WEIGHTS` dictionary in
 `config/settings.py` to change how each moderation category contributes
 to the overall score.
 
+## Archiving Selected Posts
+
+After analysis, results are listed with checkboxes and are color coded
+by aggression score (yellow for scores 4–6 and red for 7+).  Use the
+slider above the list to choose the minimum score that should be
+automatically selected.  Press the **Archive Selected Posts** button to
+create Wayback Machine snapshots in a background thread.  The archive
+URLs are stored alongside the posts when you save the Excel report.
+
 ## Running Tests
 
 Basic functionality is covered by unit tests in the `tests/` directory. After installing the requirements, run:
