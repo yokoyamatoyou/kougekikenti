@@ -1,10 +1,10 @@
 # Aggression Analyzer Project
 
-Aggression Analyzer is an all-in-one tool for collecting posts from X (formerly Twitter) and analyzing their level of aggression.  Posts are scraped with **snscrape**, evaluated by OpenAI's moderation and chat models, and displayed in a desktop GUI built with **customtkinter**.
+Aggression Analyzer is an all-in-one tool for collecting posts from X (formerly Twitter) and analyzing their level of aggression.  Posts are scraped with **ntscraper**, evaluated by OpenAI's moderation and chat models, and displayed in a desktop GUI built with **customtkinter**.
 
 ## Prerequisites
 
-- **Python 3.10+** is recommended. snscrape may not work correctly on older versions.
+- **Python 3.10+** is recommended. ntscraper may not work correctly on older versions.
 - An **OpenAI API key** is required. Copy `.env.example` to `.env` and set `OPENAI_API_KEY`.
 - Network access is needed to scrape X and to call the OpenAI API.
 

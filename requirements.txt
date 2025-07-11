@@ -2,6 +2,6 @@ openai
 pandas
 customtkinter
 openpyxl
-snscrape
+ntscraper
 python-dotenv
 requests
