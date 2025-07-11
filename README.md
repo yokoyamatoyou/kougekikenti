@@ -85,3 +85,8 @@ All tests should pass.
 - `aggression_analyzer/config/settings.py` – Configuration constants and aggression analysis prompt template.
 - `aggression_analyzer/output/` – Default directory for generated Excel reports.
 
+
+## Documentation
+
+For Japanese instructions, see [docs/manual_ja.md](docs/manual_ja.md).
+
