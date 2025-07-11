@@ -43,7 +43,7 @@ aggression\_analyzer/
 * **タスク 0.1: ディレクトリとファイルの作成**  
   * 上記のディレクトリ構造案に基づき、必要なディレクトリと空のPythonファイルを作成する。  
 * **タスク 0.2: 依存関係と環境変数の設定**  
-  * requirements.txt を作成し、内容を記述する: openai, pandas, customtkinter, openpyxl, snscrape, python-dotenv。  
+  * requirements.txt を作成し、内容を記述する: openai, pandas, customtkinter, openpyxl, ntscraper, python-dotenv。
   * .env.example を作成し、OPENAI\_API\_KEY="YOUR\_API\_KEY\_HERE" と記述する。  
 * **タスク 0.3: 設定ファイルの作成 (config/settings.py)**  
   * アプリケーション全体の設定をこのファイルで一元管理する。  
@@ -131,3 +131,12 @@ aggression\_analyzer/
   * [x] Task 3.2
   * [x] Verification 3
 * [x] 2024-05-21 現行の実装がAGENT.mdと一致することを確認
+
+### **補足: PR作成エラーへの対処**
+
+Codexでプルリクエスト作成時に"Failed to create PR"と表示されることがある。原因の多くは
+`__pycache__` や `.pytest_cache` といったキャッシュがGitに混入したことによる。
+
+1. `git status --short` を実行し、不要なファイルを確認する。
+2. `.gitignore` にキャッシュディレクトリを追加し、`git clean -fd` で削除する。
+3. その後にコミットをやり直し、改めてPRを作成する。
