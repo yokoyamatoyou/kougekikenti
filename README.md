@@ -13,9 +13,9 @@ Aggression Analyzer is an all-in-one tool for collecting posts from X (formerly 
 Install the dependencies and create an environment file:
 
 ```bash
-pip install -r aggression_analyzer/requirements.txt
-cp aggression_analyzer/.env.example aggression_analyzer/.env
-# edit aggression_analyzer/.env and set OPENAI_API_KEY
+pip install -r requirements.txt
+cp aggression_analyzer/.env.example .env
+# edit .env and set OPENAI_API_KEY
 ```
 
 ## Usage
