@@ -4,7 +4,7 @@
 
 #### **1.1. 現状 (Current State)**
 
-攻撃性判定.pyは、既存のExcelファイルを読み込み、OpenAIのAPIを利用してテキストの攻撃性を詳細に分析・スコアリングする、非常に高機能なGUIデスクトップアプリケーションである。
+`kougeki.py` は、既存のExcelファイルを読み込み、OpenAIのAPIを利用してテキストの攻撃性を詳細に分析・スコアリングする、非常に高機能なGUIデスクトップアプリケーションである。
 
 #### **1.2. 開発目標 (Target State)**
 
@@ -69,7 +69,7 @@ aggression\_analyzer/
     }
 
 * **タスク 0.4: ロジックの分離とクラス化**  
-  * 攻撃性判定.py のロジックを、新しいディレクトリ構造に合わせて以下の通りに分離・移動する。  
+* `kougeki.py` のロジックを、新しいディレクトリ構造に合わせて以下の通りに分離・移動する。
     * **gui/app.py**: customtkinter関連のUIコード全てを ModerationApp クラスとしてここに移動。  
     * **modules/analyzer.py**: moderate\_text, get\_aggressiveness\_score, total\_aggression計算ロジックを Analyzer クラスのメソッドとしてここに移動。  
     * **main.py**: アプリケーションを起動する数行のコードのみを記述。  
