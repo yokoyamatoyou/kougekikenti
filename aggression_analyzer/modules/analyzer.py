@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import logging
 from typing import Tuple, List, Any, Callable, Optional
 
 import pandas as pd
@@ -108,8 +109,20 @@ class Analyzer:
         ]
 
         def process_row(index: int, text: str) -> tuple[int, dict[str, Any]]:
-            categories, scores = self.moderate_text(text)
-            score, reason = self.get_aggressiveness_score(text)
+            try:
+                categories, scores = self.moderate_text(text)
+                score, reason = self.get_aggressiveness_score(text)
+            except Exception:
+                logging.exception("Failed to process row %s", index)
+                result: dict[str, Any] = {
+                    "aggressiveness_score": None,
+                    "aggressiveness_reason": None,
+                }
+                for name in category_names:
+                    result[f"{name}_flag"] = False
+                    result[f"{name}_score"] = 0.0
+                return index, result
+
             result: dict[str, Any] = {
                 "aggressiveness_score": score,
                 "aggressiveness_reason": reason,
