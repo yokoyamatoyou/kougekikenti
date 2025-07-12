@@ -37,10 +37,18 @@ class ModerationApp(ctk.CTk):
         self.settings_frame = ctk.CTkFrame(self.main_frame)
         self.settings_frame.pack(pady=10, padx=20, fill="x")
 
-        self.username_entry = ctk.CTkEntry(self.settings_frame, width=120, placeholder_text="XユーザーID")
+        self.username_entry = ctk.CTkEntry(
+            self.settings_frame,
+            width=120,
+            placeholder_text="XユーザーID",
+        )
         self.username_entry.pack(side="left", padx=5)
 
-        self.limit_entry = ctk.CTkEntry(self.settings_frame, width=60, placeholder_text="取得件数")
+        self.limit_entry = ctk.CTkEntry(
+            self.settings_frame,
+            width=60,
+            placeholder_text="取得件数",
+        )
         self.limit_entry.pack(side="left", padx=5)
 
         self.temp_entry = ctk.CTkEntry(self.settings_frame, width=60)
@@ -51,7 +59,10 @@ class ModerationApp(ctk.CTk):
         self.top_p_entry.pack(side="left", padx=5)
         self.top_p_entry.insert(0, str(self.analyzer.top_p))
 
-        self.status_label = ctk.CTkLabel(self.main_frame, text="ユーザーIDを入力してください")
+        self.status_label = ctk.CTkLabel(
+            self.main_frame,
+            text="ユーザーIDを入力してください",
+        )
         self.status_label.pack(pady=10)
 
         self.button_frame = ctk.CTkFrame(self.main_frame)
@@ -92,7 +103,10 @@ class ModerationApp(ctk.CTk):
         )
         self.threshold_label.pack(side="left", padx=5)
 
-        self.results_frame = ctk.CTkScrollableFrame(self.main_frame, height=200)
+        self.results_frame = ctk.CTkScrollableFrame(
+            self.main_frame,
+            height=200,
+        )
         self.results_frame.pack(fill="both", expand=True, pady=10)
 
         self.archive_button = ctk.CTkButton(
@@ -106,7 +120,10 @@ class ModerationApp(ctk.CTk):
     def run_analysis(self) -> None:
         self.run_button.configure(state="disabled")
         self.save_button.configure(state="disabled")
-        thread = threading.Thread(target=self._run_analysis_thread, daemon=True)
+        thread = threading.Thread(
+            target=self._run_analysis_thread,
+            daemon=True,
+        )
         thread.start()
 
     def _run_analysis_thread(self) -> None:
@@ -116,14 +133,26 @@ class ModerationApp(ctk.CTk):
         try:
             limit = int(limit_str) if limit_str else 20
         except ValueError:
-            self.after(0, lambda: self.status_label.configure(text="取得件数が不正です", text_color="red"))
+            self.after(
+                0,
+                lambda: self.status_label.configure(
+                    text="取得件数が不正です", text_color="red"
+                ),
+            )
             self.after(0, lambda: self.run_button.configure(state="normal"))
             return
 
-        self.after(0, lambda: self.status_label.configure(text="投稿を取得中..."))
+        self.after(
+            0, lambda: self.status_label.configure(text="投稿を取得中...")
+        )
         df = self.scraper.scrape_user_posts(username, limit)
         if df.empty:
-            self.after(0, lambda: self.status_label.configure(text="投稿が取得できませんでした", text_color="red"))
+            self.after(
+                0,
+                lambda: self.status_label.configure(
+                    text="投稿が取得できませんでした", text_color="red"
+                ),
+            )
             self.after(0, lambda: self.run_button.configure(state="normal"))
             return
 
@@ -133,16 +162,26 @@ class ModerationApp(ctk.CTk):
 
         def progress(done: int, total: int = total_rows) -> None:
             p = done / total
-            self.after(0, lambda: (
-                self.progress_bar.set(p),
-                self.status_label.configure(text=f"分析中... {done}/{total}"),
-            ))
+            self.after(
+                0,
+                lambda: (
+                    self.progress_bar.set(p),
+                    self.status_label.configure(
+                        text=f"分析中... {done}/{total}"
+                    ),
+                ),
+            )
 
-        self.df = self.analyzer.analyze_dataframe_in_parallel(self.df, progress)
+        self.df = self.analyzer.analyze_dataframe_in_parallel(
+            self.df, progress
+        )
         self.after(0, self._display_results)
 
     def save_results(self) -> None:
-        save_path = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")])
+        save_path = filedialog.asksaveasfilename(
+            defaultextension=".xlsx",
+            filetypes=[("Excel files", "*.xlsx")],
+        )
         if not save_path:
             return
         try:
@@ -150,14 +189,21 @@ class ModerationApp(ctk.CTk):
             self.status_label.configure(text="結果を保存しました", text_color="green")
         except Exception as e:
             self.status_label.configure(text="保存に失敗しました", text_color="red")
-            messagebox.showerror("保存エラー", f"ファイルを保存できませんでした: {e}")
+            messagebox.showerror(
+                "保存エラー",
+                f"ファイルを保存できませんでした: {e}",
+            )
 
     def on_threshold_change(self, value: float) -> None:
         score = int(float(value))
         self.threshold_label.configure(text=f"自動選択スコア: {score}")
         for item in self.result_items:
             idx = item["index"]
-            post_score = self.df.loc[idx, "aggressiveness_score"] if self.df is not None else 0
+            post_score = (
+                self.df.loc[idx, "aggressiveness_score"]
+                if self.df is not None
+                else 0
+            )
             item["var"].set(post_score >= score)
 
     def _display_results(self) -> None:
@@ -175,7 +221,9 @@ class ModerationApp(ctk.CTk):
                 color = "#555500"
             frame = ctk.CTkFrame(self.results_frame, fg_color=color)
             frame.pack(fill="x", pady=2)
-            var = ctk.BooleanVar(value=row["aggressiveness_score"] >= threshold)
+            var = ctk.BooleanVar(
+                value=row["aggressiveness_score"] >= threshold
+            )
             chk = ctk.CTkCheckBox(frame, variable=var)
             chk.pack(side="left")
             text = f"{row['aggressiveness_score']}: {row['content'][:50]}"
@@ -195,7 +243,10 @@ class ModerationApp(ctk.CTk):
 
     def batch_archive(self) -> None:
         self.archive_button.configure(state="disabled")
-        thread = threading.Thread(target=self._batch_archive_thread, daemon=True)
+        thread = threading.Thread(
+            target=self._batch_archive_thread,
+            daemon=True,
+        )
         thread.start()
 
     def _batch_archive_thread(self) -> None:
@@ -205,7 +256,10 @@ class ModerationApp(ctk.CTk):
         for item in selected:
             idx = item["index"]
             url = self.df.loc[idx, "url"]
-            self.after(0, lambda st=item["status"]: st.configure(text="魚拓作成中..."))
+            self.after(
+                0,
+                lambda st=item["status"]: st.configure(text="魚拓作成中..."),
+            )
             archive = archive_url(url)
             if archive:
                 self.df.loc[idx, "archive_url"] = archive

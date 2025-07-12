@@ -3,9 +3,10 @@ import sys
 import pandas as pd
 from types import SimpleNamespace
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'aggression_analyzer'))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), '..', 'aggression_analyzer')
+)
 
-import pytest
 
 from aggression_analyzer.modules.analyzer import Analyzer
 
@@ -15,7 +16,13 @@ class FakeChat:
         @staticmethod
         def create(**kwargs):
             return SimpleNamespace(
-                choices=[SimpleNamespace(message=SimpleNamespace(content='{"score": 7, "reason": "mocked"}'))]
+                choices=[
+                    SimpleNamespace(
+                        message=SimpleNamespace(
+                            content='{"score": 7, "reason": "mocked"}'
+                        )
+                    )
+                ]
             )
 
     completions = Completions()
@@ -28,7 +35,10 @@ class FakeOpenAI:
 
 
 def test_get_aggressiveness_score(monkeypatch):
-    monkeypatch.setattr('aggression_analyzer.modules.analyzer.OpenAI', FakeOpenAI)
+    monkeypatch.setattr(
+        'aggression_analyzer.modules.analyzer.OpenAI',
+        FakeOpenAI,
+    )
     analyzer = Analyzer(api_key='test')
     score, reason = analyzer.get_aggressiveness_score('hello')
     assert score == 7
@@ -60,7 +70,11 @@ def test_analyze_dataframe_in_parallel(monkeypatch):
         return categories, scores
 
     monkeypatch.setattr(analyzer, "moderate_text", fake_moderate_text)
-    monkeypatch.setattr(analyzer, "get_aggressiveness_score", lambda text: (5, "ok"))
+    monkeypatch.setattr(
+        analyzer,
+        "get_aggressiveness_score",
+        lambda text: (5, "ok"),
+    )
 
     df = pd.DataFrame({"content": ["a", "b", "c"]})
     progress = []
@@ -103,12 +117,18 @@ def test_analyze_dataframe_in_parallel_error_row(monkeypatch):
         return categories, scores
 
     monkeypatch.setattr(analyzer, "moderate_text", maybe_fail)
-    monkeypatch.setattr(analyzer, "get_aggressiveness_score", lambda text: (5, "ok"))
+    monkeypatch.setattr(
+        analyzer,
+        "get_aggressiveness_score",
+        lambda text: (5, "ok"),
+    )
 
     df = pd.DataFrame({"content": ["a", "bad", "c"]})
     progress = []
 
-    result = analyzer.analyze_dataframe_in_parallel(df, lambda d, t: progress.append(d))
+    result = analyzer.analyze_dataframe_in_parallel(
+        df, lambda d, t: progress.append(d)
+    )
 
     assert list(progress) == [1, 2, 3]
     assert pd.isna(result.loc[1, "aggressiveness_score"])

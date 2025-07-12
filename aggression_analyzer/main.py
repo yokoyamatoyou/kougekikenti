@@ -9,9 +9,10 @@ if __name__ == "__main__":
     try:
         app = ModerationApp()
         app.mainloop()
-    except tk.TclError as e:
+    except tk.TclError:
         print(
-            "GUI initialization failed: a graphical display environment is required.",
+            "GUI initialization failed: a graphical display environment is "
+            "required.",
             file=sys.stderr,
         )
         sys.exit(1)

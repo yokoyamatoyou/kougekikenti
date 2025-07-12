@@ -76,6 +76,16 @@ pytest -q
 
 All tests should pass.
 
+## Code Style
+
+The repository is checked with **flake8** using the default settings. Run
+
+```bash
+flake8
+```
+
+before submitting patches, or let the CI run in pull requests.
+
 ## Project Structure
 
 - `aggression_analyzer/main.py` – Loads environment variables and launches the GUI.

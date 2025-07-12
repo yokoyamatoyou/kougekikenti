@@ -17,7 +17,9 @@ except Exception as e:  # pragma: no cover - environment dependent
 class Scraper:
     def __init__(self, instance: str | None = "https://nitter.net") -> None:
         self.instance = instance
-        self._nitter = self._create_nitter(instance) if SCRAPE_AVAILABLE else None
+        self._nitter = (
+            self._create_nitter(instance) if SCRAPE_AVAILABLE else None
+        )
         self._columns = ["timestamp", "url", "content", "user_name"]
 
     def _create_nitter(self, instance: str):
@@ -47,7 +49,9 @@ class Scraper:
             return pd.DataFrame(columns=self._columns)
         return pd.DataFrame(tweets, columns=self._columns)
 
-    def scrape_user_posts(self, username: str, limit: int = 20) -> pd.DataFrame:
+    def scrape_user_posts(
+        self, username: str, limit: int = 20
+    ) -> pd.DataFrame:
         """Scrape recent posts from an X (Twitter) user.
 
         Parameters
@@ -60,13 +64,16 @@ class Scraper:
         Returns
         -------
         pandas.DataFrame
-            Data frame containing ``timestamp``, ``url``, ``content`` and ``user_name`` columns.
-            If scraping is unavailable or fails, an empty DataFrame is returned.
+            Data frame containing ``timestamp``, ``url``, ``content`` and
+            ``user_name`` columns. If scraping is unavailable or fails,
+            an empty DataFrame is returned.
         """
 
         return self._fetch_tweets(username, "user", limit)
 
-    def search_posts_by_keyword(self, keyword: str, limit: int = 20) -> pd.DataFrame:
+    def search_posts_by_keyword(
+        self, keyword: str, limit: int = 20
+    ) -> pd.DataFrame:
         """Search posts by keyword using Nitter."""
 
         return self._fetch_tweets(keyword, "term", limit)
