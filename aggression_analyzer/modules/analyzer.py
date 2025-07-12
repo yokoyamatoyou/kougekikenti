@@ -2,7 +2,7 @@ import os
 import json
 import time
 import logging
-from typing import Tuple, List, Any, Callable, Optional
+from typing import Any, Callable, Optional
 
 import pandas as pd
 from openai import OpenAI
@@ -35,7 +35,9 @@ class Analyzer:
         scores = response.results[0].category_scores
         return categories, scores
 
-    def get_aggressiveness_score(self, text: str, max_retries: int = 3) -> Tuple[int | None, str | None]:
+    def get_aggressiveness_score(
+        self, text: str, max_retries: int = 3
+    ) -> tuple[int | None, str | None]:
         prompt = AGGRESSION_PROMPT_TEMPLATE.format(text=text)
         for attempt in range(max_retries):
             try:
@@ -52,7 +54,9 @@ class Analyzer:
                 if 0 <= score <= 10:
                     return score, reason
             except Exception as e:
-                print(f"エラーが発生しました（試行 {attempt + 1}/{max_retries}）: {e}")
+                print(
+                    f"エラーが発生しました（試行 {attempt + 1}/{max_retries}）: {e}"
+                )
             time.sleep(1)
         return None, None
 
@@ -74,7 +78,8 @@ class Analyzer:
             * row.get("sexual/minors_score", 0)
             + WEIGHTS.get("aggressiveness_score", 0.5)
             * (row.get("aggressiveness_score") or 0)
-            + WEIGHTS.get("hate_flag", 2.0) * (1 if row.get("hate_flag") else 0)
+            + WEIGHTS.get("hate_flag", 2.0)
+            * (1 if row.get("hate_flag") else 0)
             + WEIGHTS.get("hate/threatening_flag", 1.0)
             * (1 if row.get("hate/threatening_flag") else 0)
             + WEIGHTS.get("violence_flag", 1.5)
@@ -137,7 +142,9 @@ class Analyzer:
         results: dict[int, dict[str, Any]] = {}
         total = len(df)
         completed = 0
-        with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_WORKERS) as executor:
+        with ThreadPoolExecutor(
+            max_workers=MAX_CONCURRENT_WORKERS
+        ) as executor:
             futures = {
                 executor.submit(process_row, i, row["content"]): i
                 for i, row in df.iterrows()
