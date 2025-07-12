@@ -56,13 +56,19 @@ import time
 
 
 def test_scrape_user_posts(monkeypatch):
-    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', lambda _: None)
+    calls: list[float] = []
+
+    def fake_sleep(sec: float):
+        calls.append(sec)
+
+    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', fake_sleep)
     scraper = Scraper()
     df = scraper.scrape_user_posts('user', limit=2)
     assert len(df) == 2
     assert list(df.columns) == ['timestamp', 'url', 'content', 'user_name']
     assert df.iloc[0]['content'] == 'a'
     assert df.iloc[1]['url'] == 'https://x.com/2'
+    assert len(calls) == 1
 
 
 def test_get_user_profile():
@@ -72,31 +78,55 @@ def test_get_user_profile():
 
 
 def test_search_posts_by_keyword(monkeypatch):
-    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', lambda _: None)
+    calls: list[float] = []
+
+    def fake_sleep(sec: float):
+        calls.append(sec)
+
+    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', fake_sleep)
     scraper = Scraper()
     df = scraper.search_posts_by_keyword('hello', limit=1)
     assert len(df) == 1
     assert df.iloc[0]['url'] == 'https://x.com/1'
+    assert len(calls) == 1
 
 
 def test_nonexistent_user_returns_empty_dataframe(monkeypatch):
-    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', lambda _: None)
+    calls: list[float] = []
+
+    def fake_sleep(sec: float):
+        calls.append(sec)
+
+    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', fake_sleep)
     scraper = Scraper()
     df = scraper.scrape_user_posts('nouser', limit=1)
     assert df.empty
     assert list(df.columns) == ['timestamp', 'url', 'content', 'user_name']
+    assert calls == []
 
 
 def test_rare_keyword_returns_zero_results(monkeypatch):
-    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', lambda _: None)
+    calls: list[float] = []
+
+    def fake_sleep(sec: float):
+        calls.append(sec)
+
+    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', fake_sleep)
     scraper = Scraper()
     df = scraper.search_posts_by_keyword('rarekeyword', limit=5)
     assert df.empty
     assert list(df.columns) == ['timestamp', 'url', 'content', 'user_name']
+    assert len(calls) == 1
 
 
 def test_search_dataframe_columns(monkeypatch):
-    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', lambda _: None)
+    calls: list[float] = []
+
+    def fake_sleep(sec: float):
+        calls.append(sec)
+
+    monkeypatch.setattr('aggression_analyzer.modules.scraper.time.sleep', fake_sleep)
     scraper = Scraper()
     df = scraper.search_posts_by_keyword('hello', limit=1)
     assert set(['timestamp', 'url', 'content', 'user_name']).issubset(df.columns)
+    assert len(calls) == 1

@@ -32,6 +32,7 @@ class Scraper:
         tweets: List[Dict[str, object]] = []
         try:
             data = self._nitter.get_tweets(term, mode=mode, number=limit)
+            time.sleep(SCRAPE_DELAY_SECONDS)
             for item in data.get("tweets", []):
                 tweets.append(
                     {
@@ -41,7 +42,6 @@ class Scraper:
                         "user_name": item.get("user", {}).get("username"),
                     }
                 )
-                time.sleep(SCRAPE_DELAY_SECONDS)
         except Exception as e:
             print(f"{mode} error: {e}")
             return pd.DataFrame(columns=self._columns)
