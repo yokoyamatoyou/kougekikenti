@@ -1,7 +1,0 @@
-openai
-pandas
-customtkinter
-openpyxl
-ntscraper
-python-dotenv
-requests
